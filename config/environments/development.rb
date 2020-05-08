@@ -60,17 +60,6 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  # Configurations added by vipul for devise - suggested by devise install command
-
-  #FIXME_AB: move this to config/application.rb. lets take this host and pot from application.yml file from figaro gem.
-  #FIXME_AB: application.yml in git ignore.
-  #FIXME_AB: application.yml.example add to git
-  #FIXME_AB: figaro has required keys concept use that.
-  #FIXME_AB: use figaro ENV[] way
-  #FIXME_AB: also remove database.yml from git and add to git ignore. also add database.yml.example file
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-
-  #FIXME_AB: lets use letter_opener_web and add this line to production env also
-  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 end

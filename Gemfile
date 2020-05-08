@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+#FIXME_AB: ruby 2.7.0
 ruby '2.6.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -54,5 +55,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Gems included in while development
+#FIXME_AB: whenever you add any gem, please lock its version
 gem 'devise'
-gem "letter_opener", :group => :development
+gem "letter_opener" #, :group => :development

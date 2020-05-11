@@ -1,1 +1,1 @@
-Figaro.require_keys('host', 'port')
+Figaro.require_keys('host', 'mailer_sender')

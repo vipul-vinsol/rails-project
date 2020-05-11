@@ -5,10 +5,14 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :confirmable
 
 
+  #FIXME_AB: add validation on name. presence
+
+  #FIXME_AB: dependent?
   has_one :profile
 
 
   def after_confirmation
+    #FIXME_AB: this will change
     self.profile = Profile.new(credits: 5)
     self.save()
   end

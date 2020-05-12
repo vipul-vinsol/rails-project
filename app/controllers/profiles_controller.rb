@@ -1,13 +1,14 @@
 class ProfilesController < ApplicationController
 
   def edit
+    #FIXME_AB: current_user.profile
     @profile = Profile.find_by(user_id: current_user.id)
   end
 
   def attach_avatar
     @profile = current_user.profile
     @profile.avatar.attach(profile_params[:avatar])
-    if @profile.save()
+    if @profile.save
       redirect_to profile_user_path(current_user), notice: 'Profile was successfully updated.'
     else
       render :edit

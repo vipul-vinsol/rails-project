@@ -1,3 +1,5 @@
+<% #FIXME_AB: extract in a partial, in views/shared/_errors.html.erb -%>
+
 <% if @profile.errors.full_messages.any? %>
   <p>Errors:- </p>
   <% @profile.errors.full_messages.each do |error_message| %>

@@ -1,14 +1,25 @@
-<h3>Profile details edit page</h3>
-<br /><br />
-
-<% if @profile.avatar.attached? %>
-  <%= image_tag @profile.avatar %>
+<% if @profile.errors.full_messages.any? %>
+  <p>Errors:- </p>
+  <% @profile.errors.full_messages.each do |error_message| %>
+    <%= error_message if @profile.errors.full_messages.first == error_message %> <br />
+  <% end %>
 <% end %>
 
-<br />
-<%= form_for @profile, url: user_profile_url, html: { multipart: true } do |f| %>
-  <%= f.label :avatar %>:
-  <%= f.file_field :avatar %>
-  <br />
-  <%= f.submit %>
-<% end %>
+<% @profile.reload %>
+
+<div class="container">
+  <h3>Profile details edit page</h3>
+
+  <div>
+    <% if @profile.avatar.attached? && @profile.avatar.image? %>
+      <%= image_tag @profile.avatar.variant(resize_to_limit: [100, 100]) %>
+    <% end %>
+  </div>
+
+  <%= form_for @profile, url: profile_user_url, html: { multipart: true } do |f| %>
+    <%= f.label :avatar %>
+    <%= f.file_field :avatar %>
+    <br />
+    <%= f.submit %>
+  <% end %>
+</div>

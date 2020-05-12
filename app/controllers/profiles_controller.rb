@@ -5,12 +5,16 @@ class ProfilesController < ApplicationController
   end
 
   def attach_avatar
-    user = User.find(current_user.id)
-    user.profile.avatar.attach(params[:profile][:avatar])
-    if user.save()
-      redirect_to user_profile_path(user_id: user.id), notice: 'Profile was successfully updated.'
+    @profile = current_user.profile
+    @profile.avatar.attach(profile_params[:avatar])
+    if @profile.save()
+      redirect_to profile_user_path(current_user), notice: 'Profile was successfully updated.'
     else
       render :edit
     end
+  end
+
+  def profile_params
+    params.require(:profile).permit(:avatar)
   end
 end

@@ -1,19 +1,16 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :confirmable
 
-
-  #FIXME_AB: add validation on name. presence
-
-  #FIXME_AB: dependent?
-  has_one :profile
-
+  validates :name, presence: true
+  
+  has_one :profile, dependent: :destroy
+  has_many :credit_transactions
 
   def after_confirmation
-    #FIXME_AB: this will change
-    self.profile = Profile.new(credits: 5)
+    self.profile = Profile.new
     self.save()
+
+    creditTransaction = CreditTransaction.new(amount: ENV['signup_credits'], user_id: self.id)
+    creditTransaction.signup!
   end
 end

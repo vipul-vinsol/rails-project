@@ -10,6 +10,7 @@ class User < ApplicationRecord
   private def after_confirmation
     ActiveRecord::Base.transaction do
       self.create_profile!
+      #FIXME_AB: signup_credits should be rquired in figaro
       self.credit_transactions.create!(amount: ENV['signup_credits'], reason: CreditTransaction::reasons[:signup])
     end
   end

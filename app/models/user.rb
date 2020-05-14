@@ -5,18 +5,18 @@ class User < ApplicationRecord
 
   has_one :profile, dependent: :destroy
 
-  #FIXME_AB: use dependent: restrict_with_error
-  has_many :credit_transactions
+  has_many :credit_transactions, dependent: :restrict_with_error
 
-  def after_confirmation
-    #FIXME_AB: wrap in db transaction
-
-    #FIXME_AB: self.build_profile
-    self.profile = Profile.new
-    self.save()
-
-    #FIXME_AB: credit_transactions.create(amount: ENV[], reason: CreditTransaction::reasons[:signup])
-    creditTransaction = CreditTransaction.new(amount: ENV['signup_credits'], user_id: self.id)
-    creditTransaction.signup!
+  private def after_confirmation
+    ActiveRecord::Base.transaction do
+      self.create_profile!
+      self.credit_transactions.create!(amount: ENV['signup_credits'], reason: CreditTransaction::reasons[:signup])
+    end
   end
+
+  def recalculate_credits!
+    self.credits = credit_transactions.sum(:amount)
+    save!
+  end
+
 end

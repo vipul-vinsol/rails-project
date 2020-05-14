@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   resources :users do
     member do
       get 'profile', to: 'profiles#edit'
-      patch 'profile', to: 'profiles#attach_avatar'
+      patch 'profile', to: 'profiles#update'
     end
   end
 

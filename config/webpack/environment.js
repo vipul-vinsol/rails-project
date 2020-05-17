@@ -8,7 +8,6 @@ environment.plugins.append("Provide", new webpack.ProvidePlugin({
   Popper: ['popper.js', 'default']
 }));
 
-
-// FIXME_AB: environment.splitChunks()
+environment.splitChunks();
 
 module.exports = environment;

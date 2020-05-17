@@ -11,14 +11,7 @@ class ProfilesController < ApplicationController
       @profile.avatar.attach(profile_params[:avatar])
     end
 
-    #FIXME_AB: profile.assign_topics(profile_params[:topics])
-    profile_params[:topics].each do |topic_name|
-      if topic_name.blank?
-        next
-      end
-      #FIXME_AB: find_or_initialize_by. and =
-      @profile.topics << Topic.find_or_create_by(name: topic_name)
-    end
+    @profile.assign_topics(profile_params[:topics])
 
     if @profile.save
       redirect_to profile_user_path(current_user), notice: t(:profile_update_success)

@@ -11,4 +11,17 @@ class Profile < ApplicationRecord
     end
   end
 
+
+  def assign_topics(param_topics)
+    topics_array = []
+    param_topics.each do |topic_name|
+      if topic_name.blank?
+        next
+      end
+      topics_array << Topic.find_or_initialize_by(name: topic_name)
+    end
+
+    self.topics = topics_array
+  end
+
 end

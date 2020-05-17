@@ -7,6 +7,11 @@ class User < ApplicationRecord
 
   has_many :credit_transactions, dependent: :restrict_with_error
 
+  enum role: {
+    normal: 0,
+    admin: 1
+  }
+
   private def after_confirmation
     ActiveRecord::Base.transaction do
       self.create_profile!

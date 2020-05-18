@@ -6,7 +6,7 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+
     <% if content_for?(:js) %>
       <%= yield :js %>
     <% else %>
@@ -37,7 +37,7 @@
           <ul class="nav navbar-nav ml-auto">
             <% if user_signed_in? %>
               <li class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false"> 
+                <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
                   <% if current_user.profile.avatar.attached? && current_user.profile.avatar.image? %>
                     <%= image_tag current_user.profile.avatar.variant(resize_to_limit: [30, 30]) %>
                   <% else %>

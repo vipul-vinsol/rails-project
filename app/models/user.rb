@@ -1,16 +1,16 @@
 class User < ApplicationRecord
+  enum role: {
+    normal: 0,
+    admin: 1
+  }
+
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :confirmable
 
   validates :name, presence: true
 
   has_one :profile, dependent: :destroy
-
   has_many :credit_transactions, dependent: :restrict_with_error
 
-  enum role: {
-    normal: 0,
-    admin: 1
-  }
 
   private def after_confirmation
     ActiveRecord::Base.transaction do

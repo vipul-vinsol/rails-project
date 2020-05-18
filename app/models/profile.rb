@@ -1,9 +1,20 @@
 class Profile < ApplicationRecord
+
+  # include extend
+  # enum
+  # macros
+  # validations
+  # associations
+  # callbacks
+  # scopes
+
+
+  validate :avatar_can_only_be_image
+
   belongs_to :user
   has_one_attached :avatar
   has_and_belongs_to_many :topics
 
-  validate :avatar_can_only_be_image
 
   private def avatar_can_only_be_image
     if avatar.nil? || (avatar.attached? && !avatar.image?)
@@ -11,13 +22,9 @@ class Profile < ApplicationRecord
     end
   end
 
-
   def assign_topics(param_topics)
     topics_array = []
-    param_topics.each do |topic_name|
-      if topic_name.blank?
-        next
-      end
+    param_topics.select(&:present?).each do |topic_name|
       topics_array << Topic.find_or_initialize_by(name: topic_name)
     end
 

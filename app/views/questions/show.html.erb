@@ -1,0 +1,19 @@
+<div class="container">
+  <h3 class="question-title"> <%= @question.title %> </h3>
+  <p class="question-content">
+    <%= @question.presenter.display_markdown_content %>
+  </p>
+  <ul class="question-topic-list">
+    <% @question.topics.each do |topic| %>
+      <li> <%= topic.name %> </li>
+    <% end %>
+  </ul>
+  <div>
+    <% if @question.attachment.attached? && @question.attachment.attachment.content_type === "application/pdf" %>
+      <%= link_to image_tag(@question.attachment.preview(resize: "180x180")), question_path(@question.id) %>
+    <% end %>
+  </div>
+</div>
+
+<%= link_to 'Edit', edit_question_path(@question) %> |
+<%= link_to 'Back', questions_path %>

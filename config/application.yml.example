@@ -1,4 +1,5 @@
 host: 
 port: 
 mailer_sender: 
-secret_key: 
+secret_key:
+credits_needed_to_ask_question:

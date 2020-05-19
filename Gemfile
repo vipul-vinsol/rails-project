@@ -63,3 +63,8 @@ gem 'figaro', '~> 1.1'
 gem 'letter_opener', '~> 1.7'
 gem 'letter_opener_web', '~> 1.0'
 gem 'image_processing', '~> 1.0'
+gem 'redcarpet', '~> 3.3', '>= 3.3.4'
+gem 'will_paginate', '~> 3.1.0'
+gem 'will_paginate-bootstrap4', '~> 0.2.2'
+gem 'basic_presenter', '~> 0.0.4'
+gem "paranoia", "~> 2.2"

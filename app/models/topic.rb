@@ -1,5 +1,6 @@
 class Topic < ApplicationRecord
   has_and_belongs_to_many :profiles
+  has_and_belongs_to_many :question
 
   validates :name, presence: true
   validates :name, uniqueness: {

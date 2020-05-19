@@ -1,0 +1,8 @@
+.question-list {
+  display: flex;
+  flex-direction: column;
+
+  &-item {
+    padding: 20px;
+  }
+}

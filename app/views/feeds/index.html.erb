@@ -1,1 +1,15 @@
 <h1>Welcome to your feed</h1>
+
+<% if @questions.empty? %>
+  <p>
+    No questions posted for your topics yet. Either try adding more topics or browse all questions. You can browse all questions by clicking on the browse question link in the navigation.
+  </p>
+<% end %>
+
+<div class="question-list">
+  <% @questions.each do |question| %>
+    <%= render 'question', question: question %>  
+  <% end %>
+</div>
+
+<%= will_paginate @questions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>

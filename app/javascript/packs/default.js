@@ -4,7 +4,7 @@ require("@rails/activestorage").start()
 require("channels")
 
 import "bootstrap";
-import "../stylesheets/application";
+import "../stylesheets/js-application";
 import "@fortawesome/fontawesome-free/js/all";
 
 document.addEventListener("turbolinks:load", () => {

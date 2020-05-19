@@ -6,11 +6,7 @@ Rails.application.routes.draw do
   devise_for :users, path: 'users'
 
   resources :users do
-    #FIXME_AB: make singular resource - nested
-    member do
-      get 'profile', to: 'profiles#edit'
-      patch 'profile', to: 'profiles#update'
-    end
+    resource :profile, only: [:edit, :update]
   end
 
 end

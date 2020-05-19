@@ -14,7 +14,7 @@ class ProfilesController < ApplicationController
     @profile.assign_topics(profile_params[:topics])
 
     if @profile.save
-      redirect_to profile_user_path(current_user), notice: t(:profile_update_success)
+      redirect_to edit_user_profile_path(current_user), notice: t(:profile_update_success)
     else
       render :edit
     end

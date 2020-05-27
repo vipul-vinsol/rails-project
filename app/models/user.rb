@@ -5,30 +5,33 @@ class User < ApplicationRecord
   }
 
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :confirmable
-  
+
   validates :name, presence: true
 
   has_one :profile, dependent: :destroy
   has_many :questions, dependent: :restrict_with_error
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
+  #FIXME_AB: has_many :transactions
 
   private def after_confirmation
     ActiveRecord::Base.transaction do
       self.create_profile!
-      self.credit_transactions.create!(
-        user_id: id, 
-        amount: ENV['signup_credits'], 
-        reason: CreditTransaction::reasons[:signup]
+      self.credit_transactions.signup.create!(
+        user_id: id,
+        amount: ENV['signup_credits'],
       )
     end
   end
 
   def recalculate_credits!
+    #FIXME_AB: transactions.sum....
     self.credits = CreditTransaction.where(user_id: id).sum(:amount)
     save!
   end
 
   def enough_credits_for_posting_question?
+    #FIXME_AB: take +ve value and multiply by -1 when charging
+    #FIXME_AB: credits >= ENV['credits_needed_to_ask_question'].to_i
     credits < ENV['credits_needed_to_ask_question'].to_i.abs
   end
 

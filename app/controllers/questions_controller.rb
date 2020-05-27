@@ -3,13 +3,15 @@ class QuestionsController < ApplicationController
   before_action :check_if_draft?, only: [:edit, :update]
   before_action :is_author?, only: [:edit, :update, :destroy]
   before_action :draft_questions_can_only_been_seen_by_author, only: [:show]
-  before_action :check_user_has_enough_credit_to_post_question, only: [:new]
+  before_action :check_user_has_enough_credit_to_post_question, only: [:new, :create]
   before_action :can_be_deleted, only: [:destroy]
 
   def index
+    #FIXME_AB: since you will show user's name also, eager load. Install bullet gem
+    #FIXME_AB: lets take per page from env.
     @questions = Question.search(params[:q]).published
                   .includes(:topics)
-                  .paginate(page: params[:page], per_page: 3) 
+                  .paginate(page: params[:page], per_page: 3)
                   .order(updated_at: :desc)
   end
 
@@ -20,9 +22,10 @@ class QuestionsController < ApplicationController
   def show
   end
 
+  #FIXME_AB: drafts
   def user_draft
     @questions = current_user.questions.draft
-                  .paginate(page: params[:page], per_page: 2) 
+                  .paginate(page: params[:page], per_page: 2)
                   .order(updated_at: :desc)
   end
 
@@ -33,13 +36,14 @@ class QuestionsController < ApplicationController
         @question.save!
         if question_params[:attachment]
           @question.attachment.attach(question_params[:attachment])
-        end          
-        @question.assign_topics(params[:question][:topics])  
-        if @question.initial_publish?
-          @question.credit_transactions.create!(
-            amount: ENV['credits_needed_to_ask_question'], 
-            reason: CreditTransaction::reasons[:question_posted],
-            user_id: current_user.id        
+        end
+        @question.assign_topics(params[:question][:topics])
+        if @question.publishing_first_time?
+          #FIXME_AB: this shoudl be done in before save callback
+          @question.credit_transactions.question_posted.create!(
+            amount: ENV['credits_needed_to_ask_question'],
+            # reason: CreditTransaction::reasons[:question_posted],
+            user_id: current_user.id
           )
         end
         redirect_to question_path(@question), notice: t('questions.question_create_success')
@@ -55,12 +59,12 @@ class QuestionsController < ApplicationController
 
   def update
     ActiveRecord::Base.transaction do
-      begin 
+      begin
         @question.update!(question_params)
         if question_params[:attachment]
           @question.attachment.attach(question_params[:attachment])
         end
-        @question.assign_topics(params[:question][:topics])                
+        @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_update_success')
       rescue Exception => e
         render :edit
@@ -70,6 +74,8 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
+    #FIXME_AB: what if object was not destroyed
+    #FIXME_AB: also redirect accordingly with message
     @question.destroy
   end
 
@@ -82,8 +88,9 @@ class QuestionsController < ApplicationController
   end
 
   private def is_author?
+
     unless current_user.question_ids.include?(params[:id].to_i)
-      redirect_back fallback_location: '/', alert: "Can't access the resource, permission denied" and return
+      redirect_back fallback_location: root_path, alert: "Can't access the resource, permission denied" and return
     end
   end
 
@@ -94,11 +101,14 @@ class QuestionsController < ApplicationController
   end
 
   private def draft_questions_can_only_been_seen_by_author
+    #FIXME_AB: redirect
+    #FIXME_AB: @quesiton.posted_by?(current_user)
     @question.draft? && is_author?
   end
 
   private def check_user_has_enough_credit_to_post_question
-    current_user.enough_credits_for_posting_question?    
+    #FIXME_AB: redirect if not enough credit
+    current_user.enough_credits_for_posting_question?
   end
 
   private def can_be_deleted?

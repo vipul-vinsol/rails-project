@@ -10,5 +10,6 @@ Rails.application.routes.draw do
   end
 
   resources :questions
+  #FIXME_AB: collection to questions
   get :drafts, to: 'questions#user_draft'
 end

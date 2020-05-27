@@ -1,6 +1,6 @@
 class Question < ApplicationRecord
   acts_as_paranoid
-  
+
   include BasicPresenter::Concern
 
   enum status: {
@@ -12,7 +12,7 @@ class Question < ApplicationRecord
   validates :title, uniqueness: {
     case_sensitive: false
   }, allow_blank: true
-  validate :check_credits_for_posting_questions, if: :initial_publish?
+  validate :check_credits_for_posting_questions, if: :publishing_first_time?
   validate :attachment_can_only_be_pdf
 
   belongs_to :user
@@ -22,8 +22,12 @@ class Question < ApplicationRecord
 
   after_create :set_slug
 
+  #FIXME_AB: before_destroy callback
+
+  #FIXME_AB: add a chck that question should be in draft state  if changing title or body
+
   private def check_credits_for_posting_questions
-    if user.enough_credits_for_posting_question?
+    unless user.enough_credits_for_posting_question?
       errors.add(:base, I18n.t('questions.not_enough_credit_to_post_question', credits: ENV['credits_needed_to_ask_question'].to_i.abs))
     end
   end
@@ -39,12 +43,12 @@ class Question < ApplicationRecord
     save
   end
 
-  def initial_publish?
-    published? and !already_published?
+  def publishing_first_time?
+    published? && !already_charged?
   end
 
-  private def already_published?
-    credit_transactions.find_by_reason(CreditTransaction::reasons[:question_posted]) != nil
+  private def already_charged?
+    credit_transactions.question_posted.exists?
   end
 
   private def can_be_destroyed?

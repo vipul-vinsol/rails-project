@@ -28,6 +28,7 @@
   </div>
 
   <div>
+    <% #FIXME_AB: helper -%>
     <% if question.attachment.attached? && question.attachment.attachment.content_type === "application/pdf" %>
       <%= link_to image_tag(question.attachment.preview(resize: "360x360")), question_path(question.id) %>
     <% end %>

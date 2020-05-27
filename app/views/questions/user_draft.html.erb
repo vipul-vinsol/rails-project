@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Your Drafts</h1>
+
+
+<div class="question-list">
+  <% @questions.each do |question| %>
+    <%= render 'question', question: question %>  
+  <% end %>
+</div>
+  
+<%= will_paginate @questions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>

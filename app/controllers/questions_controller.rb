@@ -20,6 +20,12 @@ class QuestionsController < ApplicationController
   def show
   end
 
+  def user_draft
+    @questions = current_user.questions.draft
+                  .paginate(page: params[:page], per_page: 2) 
+                  .order(updated_at: :desc)
+  end
+
   def create
     ActiveRecord::Base.transaction do
       begin

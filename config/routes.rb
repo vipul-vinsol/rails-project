@@ -10,5 +10,5 @@ Rails.application.routes.draw do
   end
 
   resources :questions
-
+  get :drafts, to: 'questions#user_draft'
 end

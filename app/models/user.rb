@@ -11,7 +11,7 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   has_many :questions, dependent: :restrict_with_error
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
-  #FIXME_AB: has_many :transactions
+  has_many :transactions, foreign_key: "user_id", class_name: "CreditTransaction"
 
   private def after_confirmation
     ActiveRecord::Base.transaction do
@@ -24,15 +24,12 @@ class User < ApplicationRecord
   end
 
   def recalculate_credits!
-    #FIXME_AB: transactions.sum....
-    self.credits = CreditTransaction.where(user_id: id).sum(:amount)
+    self.credits = transactions.sum(:amount)
     save!
   end
 
-  def enough_credits_for_posting_question?
-    #FIXME_AB: take +ve value and multiply by -1 when charging
-    #FIXME_AB: credits >= ENV['credits_needed_to_ask_question'].to_i
-    credits < ENV['credits_needed_to_ask_question'].to_i.abs
+  def has_enough_credits_for_posting_question?
+    credits >= ENV['credits_needed_to_ask_question'].to_i.abs
   end
 
 end

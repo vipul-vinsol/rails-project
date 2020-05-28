@@ -2,4 +2,5 @@ host:
 port:
 mailer_sender:
 secret_key:
-credits_needed_to_ask_question: '-1'
+credits_needed_to_ask_question: "1"
+paginator_per_page_count: "2"

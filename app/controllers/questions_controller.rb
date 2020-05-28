@@ -7,11 +7,9 @@ class QuestionsController < ApplicationController
   before_action :can_be_deleted, only: [:destroy]
 
   def index
-    #FIXME_AB: since you will show user's name also, eager load. Install bullet gem
-    #FIXME_AB: lets take per page from env.
-    @questions = Question.search(params[:q]).published
-                  .includes(:topics)
-                  .paginate(page: params[:page], per_page: 3)
+    @questions = Question.search(params[:q])
+                  .published.includes(:topics, :user)
+                  .paginate(page: params[:page], per_page: ENV['paginator_per_page_count'].to_i)
                   .order(updated_at: :desc)
   end
 
@@ -22,8 +20,7 @@ class QuestionsController < ApplicationController
   def show
   end
 
-  #FIXME_AB: drafts
-  def user_draft
+  def drafts
     @questions = current_user.questions.draft
                   .paginate(page: params[:page], per_page: 2)
                   .order(updated_at: :desc)
@@ -38,17 +35,10 @@ class QuestionsController < ApplicationController
           @question.attachment.attach(question_params[:attachment])
         end
         @question.assign_topics(params[:question][:topics])
-        if @question.publishing_first_time?
-          #FIXME_AB: this shoudl be done in before save callback
-          @question.credit_transactions.question_posted.create!(
-            amount: ENV['credits_needed_to_ask_question'],
-            # reason: CreditTransaction::reasons[:question_posted],
-            user_id: current_user.id
-          )
-        end
         redirect_to question_path(@question), notice: t('questions.question_create_success')
       rescue Exception => e
-        render :edit
+        #FIXME_AB: this won't work render. Read flash.now, flash.keep
+        render :edit, alert: e.message.present? ? e.message : ''
         raise ActiveRecord::Rollback, e.message
       end
     end
@@ -67,57 +57,59 @@ class QuestionsController < ApplicationController
         @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_update_success')
       rescue Exception => e
-        render :edit
+        render :edit, alert: e.message.present? ? e.message : ''
         raise ActiveRecord::Rollback, e.message
       end
     end
   end
 
   def destroy
-    #FIXME_AB: what if object was not destroyed
-    #FIXME_AB: also redirect accordingly with message
-    @question.destroy
+    if @question.destroy
+      redirect_back fallback_location: root_path, notice: 'Question deleted successfully'
+    else
+      redirect_back fallback_location: root_path, alert: @question.errors.messages
+    end
   end
 
   private def set_question
     begin
       @question = Question.find(params[:id])
     rescue Exception => e
-      redirect_to '/', alert: 'Requested resource does not exist' and return
+      redirect_to root_path, alert: 'Requested resource does not exist' and return
     end
   end
 
   private def is_author?
-
-    unless current_user.question_ids.include?(params[:id].to_i)
+    unless @question.posted_by?(current_user)
       redirect_back fallback_location: root_path, alert: "Can't access the resource, permission denied" and return
     end
   end
 
   private def check_if_draft?
     unless @question.draft?
-      redirect_back fallback_location: '/', alert: 'Only draft questions can be updated' and return
+      redirect_back fallback_location: root_path, alert: 'Only draft questions can be updated' and return
     end
   end
 
   private def draft_questions_can_only_been_seen_by_author
-    #FIXME_AB: redirect
-    #FIXME_AB: @quesiton.posted_by?(current_user)
-    @question.draft? && is_author?
+    if @question.draft? && !@question.posted_by?(current_user)
+      redirect_back fallback_location: root_path, alert: "Permission Denied" and return
+    end
   end
 
   private def check_user_has_enough_credit_to_post_question
-    #FIXME_AB: redirect if not enough credit
-    current_user.enough_credits_for_posting_question?
+    unless current_user.has_enough_credits_for_posting_question?
+      redirect_back fallback_location: root_path, alert: t('questions.not_enough_credit_to_post_question', credits: ENV['credits_needed_to_ask_question'].to_i.abs)
+    end
   end
 
   private def can_be_deleted?
     unless @question.can_be_deleted?
-      redirect_back fallback_location: '/', alert: 'Can not be deleted' and return
+      redirect_back fallback_location: root_path, alert: 'Can not be deleted' and return
     end
   end
 
-  def question_params
+  private def question_params
     params.require(:question).permit(:title, :content, :attachment, :status)
   end
 end

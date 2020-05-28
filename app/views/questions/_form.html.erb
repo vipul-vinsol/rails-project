@@ -1,0 +1,45 @@
+<% content_for :js do %>
+  <%= javascript_packs_with_chunks_tag 'edit_profile', 'data-turbolinks-track': 'reload' %>
+<% end %>
+
+<%= form_with(model: question, local: true) do |f| %>
+  <%= render 'shared/errors', object: question %>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :content %>
+    <%= f.text_area :content, cols: 20, rows: 10, class: 'form-control', placeholder: 'Supports rich text via the markdown schema' %>
+  </div>
+
+  <div class="form-group">
+    <label>Topics for question</label>
+    <%= f.select(:topics, options_for_select(Topic.all.map{ |t| [t.name, t.name] }, question.topics.pluck(:name)),
+    {}, { class: "form-control select2-target", multiple: true }) %>
+  </div>
+
+  <div class="form-group">
+    <label>Status</label>
+    <%= f.select(:status, options_for_select(Question::statuses.map{ |key, _| [key.capitalize, key] }, question.status),
+    {}, { class: "form-control" }) %>
+  </div>
+
+  <div>
+    <% if question.has_attached_pdf? %>
+      <%= link_to image_tag(question.attachment.preview(resize: "360x360")), question_path(question.id) %>
+    <% end %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label t('.attachment_label'), for: :question_attachment%>
+    <%= f.file_field :attachment, class: 'form-control-file' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit 'Save', class: 'btn btn-primary btn-block' %>
+  </div>
+
+<% end %>

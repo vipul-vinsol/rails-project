@@ -1,0 +1,17 @@
+<div class="container">
+  <h3>User Profile Section</h3>
+
+  <div>
+    <% if @profile.avatar.attached? && @profile.avatar.image? %>
+      <%= image_tag @profile.avatar.variant(resize_to_limit: [100, 100]) %>
+    <% else %>
+      <div style="width: 100px; height: 100px; background-color: silver; display: flex;
+      align-items: center; justify-content: center;">
+        100 X 100
+      </div>
+    <% end %>
+  </div>
+
+  <p style="text-transform: uppercase;"><%= @profile.user.name %></p>
+
+</div>

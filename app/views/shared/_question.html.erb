@@ -2,8 +2,8 @@
   <h3> <%= link_to question.title, question %> </h3>
   <div class="publisability-details">
     <p>Posted by <%=link_to question.user.name, user_profile_path(current_user) %></p>
-    <p><%= time_ago_in_words(question.created_at) %></p>
-  </div>  
+    <p><%= time_ago_in_words(question.created_at) %> ago</p>
+  </div>
   <ul class="question-topics-list">
     <% question.topics.each do |topic| %>
       <li class="question-topics-list-item"><%= topic.name %></li>

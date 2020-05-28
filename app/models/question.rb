@@ -14,7 +14,7 @@ class Question < ApplicationRecord
   }, allow_blank: true
   validate :check_credits_for_posting_questions, if: :publishing_first_time?
   validate :attachment_can_only_be_pdf
-  validate :question_was_in_draft_state, if: -> { title_changed? || content_changed? }
+  validate :question_was_in_draft_state, if: -> { title_changed? || content_changed? }, on: :update
 
   belongs_to :user
   has_one_attached :attachment

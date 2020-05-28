@@ -14,6 +14,7 @@ class Question < ApplicationRecord
   }, allow_blank: true
   validate :check_credits_for_posting_questions, if: :publishing_first_time?
   validate :attachment_can_only_be_pdf
+  validate :question_was_in_draft_state, if: -> { title_changed? || content_changed? }
 
   belongs_to :user
   has_one_attached :attachment
@@ -21,13 +22,11 @@ class Question < ApplicationRecord
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
 
   after_create :set_slug
-
-  #FIXME_AB: before_destroy callback
-
-  #FIXME_AB: add a chck that question should be in draft state  if changing title or body
+  after_create :charge_credit_for_posting_question, if: :publishing_first_time?
+  before_destroy :can_be_destroyed?
 
   private def check_credits_for_posting_questions
-    unless user.enough_credits_for_posting_question?
+    unless user.has_enough_credits_for_posting_question?
       errors.add(:base, I18n.t('questions.not_enough_credit_to_post_question', credits: ENV['credits_needed_to_ask_question'].to_i.abs))
     end
   end
@@ -72,4 +71,24 @@ class Question < ApplicationRecord
     end
   end
 
+  private def charge_credit_for_posting_question
+    credit_transactions.question_posted.create!(
+      amount: -ENV['credits_needed_to_ask_question'].to_i,
+      user_id: user.id
+    )
+  end
+
+  def posted_by?(current_user)
+    user.id = current_user.id
+  end
+
+  def has_attached_pdf?
+    attachment.attached? && attachment.attachment.content_type === "application/pdf"
+  end
+
+  private def question_was_in_draft_state
+    unless status_was === "draft"
+      errors.add(:base, 'Can only updated questions in draft state')
+    end
+  end
 end

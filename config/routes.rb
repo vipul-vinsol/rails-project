@@ -6,10 +6,12 @@ Rails.application.routes.draw do
   devise_for :users, path: 'users'
 
   resources :users do
-    resource :profile, only: [:edit, :update]
+    resource :profile, only: [:edit, :update, :show]
   end
 
-  resources :questions
-  #FIXME_AB: collection to questions
-  get :drafts, to: 'questions#user_draft'
+  resources :questions do
+    collection do
+      get :drafts
+    end
+  end
 end

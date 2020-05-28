@@ -1,12 +1,13 @@
 class ProfilesController < ApplicationController
+  before_action :set_profile
 
   def edit
-    @profile = current_user.profile
+  end
+
+  def show
   end
 
   def update
-    @profile = current_user.profile
-
     if profile_params[:avatar]
       @profile.avatar.attach(profile_params[:avatar])
     end
@@ -14,7 +15,7 @@ class ProfilesController < ApplicationController
     @profile.assign_topics(profile_params[:topics])
 
     if @profile.save
-      redirect_to edit_user_profile_path(current_user), notice: t(:profile_update_success)
+      redirect_to edit_user_profile_path(current_user), notice: t('questions.profile_update_success')
     else
       render :edit
     end
@@ -22,5 +23,9 @@ class ProfilesController < ApplicationController
 
   def profile_params
     params.require(:profile).permit(:avatar, topics: [])
+  end
+
+  private def set_profile
+    @profile = current_user.profile
   end
 end

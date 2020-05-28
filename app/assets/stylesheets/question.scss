@@ -4,5 +4,27 @@
 
   &-item {
     padding: 20px;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.publisability-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+.question-topics-list {
+  padding: 0px;
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+
+  &-item {
+    margin: 0px 10px 5px 0px;
+    padding: 10px;
+    background-color: #eee;
+    border-radius: 6px;
   }
 }

@@ -9,13 +9,12 @@
     <% end %>
   </ul>
   <div>
-    <% #FIXME_AB: @question.has_pdf_attached? -%>
-    <% if @question.attachment.attached? && @question.attachment.attachment.content_type === "application/pdf" %>
+    <% if @question.has_attached_pdf? %>
       <%= link_to image_tag(@question.attachment.preview(resize: "180x180")), question_path(@question.id) %>
     <% end %>
   </div>
 </div>
 
-<% #FIXME_AB: hide edit link for other users. if @question.posted_by?(current_user) -%>
-<%= link_to 'Edit', edit_question_path(@question) %> |
-<%= link_to 'Back', questions_path %>
+<% if @question.posted_by?(current_user) %>
+  <%= link_to 'Edit', edit_question_path(@question), class: 'btn btn-primary btn-lg' %>
+<% end %>

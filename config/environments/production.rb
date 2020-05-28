@@ -113,4 +113,11 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method    = :letter_opener_web
   config.action_mailer.perform_deliveries = true
+
+  Rails.application.config.middleware.use ExceptionNotification::Rack,
+    email: {
+      email_prefix: '[Exception] ',
+      sender_address: %{"notifier" <notifier@example.com>},
+      exception_recipients: %w{exceptions@example.com}
+    }
 end

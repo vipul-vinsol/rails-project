@@ -21,7 +21,7 @@ class ProfilesController < ApplicationController
     end
   end
 
-  def profile_params
+  private def profile_params
     params.require(:profile).permit(:avatar, topics: [])
   end
 

@@ -37,6 +37,7 @@ class QuestionsController < ApplicationController
         @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_create_success')
       rescue Exception => e
+        #FIXME_AB: this won't work render. Read flash.now, flash.keep
         render :edit, alert: e.message.present? ? e.message : ''
         raise ActiveRecord::Rollback, e.message
       end
@@ -64,7 +65,7 @@ class QuestionsController < ApplicationController
 
   def destroy
     if @question.destroy
-      redirect_back fallback_location: root_path, notice: 'Question deleted successfully'      
+      redirect_back fallback_location: root_path, notice: 'Question deleted successfully'
     else
       redirect_back fallback_location: root_path, alert: @question.errors.messages
     end
@@ -108,7 +109,7 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def question_params
+  private def question_params
     params.require(:question).permit(:title, :content, :attachment, :status)
   end
 end

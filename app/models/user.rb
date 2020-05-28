@@ -9,19 +9,27 @@ class User < ApplicationRecord
   validates :name, presence: true
 
   has_one :profile, dependent: :destroy
-  has_many :credit_transactions, dependent: :restrict_with_error
-
+  has_many :questions, dependent: :restrict_with_error
+  has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
+  has_many :transactions, foreign_key: "user_id", class_name: "CreditTransaction"
 
   private def after_confirmation
     ActiveRecord::Base.transaction do
       self.create_profile!
-      self.credit_transactions.create!(amount: ENV['signup_credits'], reason: CreditTransaction::reasons[:signup])
+      self.credit_transactions.signup.create!(
+        user_id: id,
+        amount: ENV['signup_credits'],
+      )
     end
   end
 
   def recalculate_credits!
-    self.credits = credit_transactions.sum(:amount)
+    self.credits = transactions.sum(:amount)
     save!
+  end
+
+  def has_enough_credits_for_posting_question?
+    credits >= ENV['credits_needed_to_ask_question'].to_i.abs
   end
 
 end

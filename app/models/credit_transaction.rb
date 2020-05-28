@@ -6,6 +6,7 @@ class CreditTransaction < ApplicationRecord
   }
 
   belongs_to :user
+  belongs_to :contentable, polymorphic: true
 
   after_save :update_user_credits
 

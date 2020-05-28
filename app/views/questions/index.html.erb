@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Questions</h1>
+
+<%= form_with url: questions_path , local: true, method: :get do |f| %>
+  <%= f.search_field :q, class: "form-control", placeholder: "Type and enter to search" , value: params.dig(:q) %>
+<% end %>
+
+<div class="question-list">
+  <% @questions.each do |question| %>
+    <%= render 'shared/question', question: question %>  
+  <% end %>
+</div>
+  
+<%= will_paginate @questions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>

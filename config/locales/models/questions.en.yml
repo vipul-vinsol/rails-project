@@ -1,0 +1,7 @@
+en:
+  questions:
+    profile_update_success: "Profile was successfully updated."
+    question_create_success: "Question created successfully."
+    question_update_success: "Question updated successfully."
+    not_enough_credit_to_post_question: "Not enough credit available, %{credits} needed to post a question"
+    question_attachment_can_only_be_pdf: "Attachment can only be PDF"

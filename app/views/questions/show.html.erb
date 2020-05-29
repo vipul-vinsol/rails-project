@@ -3,14 +3,14 @@
   <p class="question-content">
     <%= @question.presenter.display_markdown_content %>
   </p>
-  <ul class="question-topic-list">
+  <ul class="question-topics-list">
     <% @question.topics.each do |topic| %>
-      <li> <%= topic.name %> </li>
+      <li class="question-topics-list-item"> <%= topic.name %> </li>
     <% end %>
   </ul>
   <div>
     <% if @question.has_attached_pdf? %>
-      <%= link_to image_tag(@question.attachment.preview(resize: "180x180")), question_path(@question.id) %>
+      <%= link_to image_tag(@question.attachment.preview(resize: "180x180")), rails_blob_path(@question.attachment, disposition: "attachment") %>
     <% end %>
   </div>
 </div>

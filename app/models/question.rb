@@ -91,4 +91,8 @@ class Question < ApplicationRecord
       errors.add(:base, 'Can only updated questions in draft state')
     end
   end
+
+  def to_param
+    slug
+  end
 end

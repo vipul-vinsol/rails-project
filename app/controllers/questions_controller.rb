@@ -37,8 +37,8 @@ class QuestionsController < ApplicationController
         @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_create_success')
       rescue Exception => e
-        #FIXME_AB: this won't work render. Read flash.now, flash.keep
-        render :edit, alert: e.message.present? ? e.message : ''
+        flash.now[:alert] = e.message.present? ? e.message : ''
+        render :edit
         raise ActiveRecord::Rollback, e.message
       end
     end
@@ -57,7 +57,8 @@ class QuestionsController < ApplicationController
         @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_update_success')
       rescue Exception => e
-        render :edit, alert: e.message.present? ? e.message : ''
+        flash.now[:alert] = e.message.present? ? e.message : ''
+        render :edit
         raise ActiveRecord::Rollback, e.message
       end
     end

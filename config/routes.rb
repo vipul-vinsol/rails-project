@@ -14,4 +14,10 @@ Rails.application.routes.draw do
       get :drafts
     end
   end
+
+  resources :notifications, only: [:index, :destroy] do
+    member do
+      get :markseen
+    end
+  end
 end

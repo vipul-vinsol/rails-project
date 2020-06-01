@@ -1,0 +1,29 @@
+.notification-list {
+  display: flex;
+  flex-direction: column;
+
+  &-item {
+    display: flex;
+    flex-direction: row;
+    padding: 20px 0px;
+    align-items: center;
+  
+    &-title {
+      margin: 0;
+      padding: 0;
+      flex-grow: 4;
+    }
+
+    &-link {
+      margin: 0px 10px;
+      color: black;
+      text-decoration: none;
+    }
+
+    &-link:hover {
+      font-size: 1.25rem;
+      color: black;
+      text-decoration: none;
+    }
+  }
+}

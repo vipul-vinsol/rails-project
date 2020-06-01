@@ -1,3 +1,16 @@
-<div class="notification">
-  
+<div class="notification-list-item">
+  <p class="notification-list-item-title">
+    <%= link_to notification.notifyable, class: (notification.unread? ? 'text-primary' : 'text-muted') do %>
+      <%= notification.notifyable.title %>
+    <% end %>   
+  </p>
+  <% if notification.unread? %>
+    <%= link_to markseen_notification_path(notification), class: 'notification-list-item-link' do %> 
+      <span>&#10003;</span>
+    <% end %>
+  <% end %>
+  <%= link_to notification_path(notification), class: 'notification-list-item-link', 
+    method: :delete, data: { confirm: "Are you sure?" } do %> 
+    <span>&#10005;</span>
+  <% end %>
 </div>

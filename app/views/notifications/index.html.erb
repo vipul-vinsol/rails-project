@@ -1,0 +1,9 @@
+<h3> Notifications </h3>
+
+<%= render 'shared/errors', object: @notification ? @notification : Notification.new %>
+
+<div class="notification-list">
+  <% @notifications.each do |notification| %>
+    <%= render 'notification', notification: notification %>
+  <% end %>
+</div>

@@ -5,6 +5,9 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 
     <% if content_for?(:js) %>
@@ -40,8 +43,8 @@
                 <%= link_to "Ask a question", new_question_path, class: 'nav-link'  %>
               </li>
               <li class="nav-item">
-                <%= link_to new_question_path, class: 'nav-link' do %>
-                  Notifications <span class="badge badge-info"><%= current_user.notifications.pending.count %></span>
+                <%= link_to notifications_path, class: 'nav-link' do %>
+                  Notifications <span class="badge badge-info"><%= current_user.notifications.unread.count %></span>
                 <% end %>
               </li>
               

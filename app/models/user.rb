@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :questions, dependent: :restrict_with_error
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
   has_many :transactions, foreign_key: "user_id", class_name: "CreditTransaction"
+  has_many :notifications
 
   private def after_confirmation
     ActiveRecord::Base.transaction do

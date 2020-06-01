@@ -21,8 +21,8 @@ class QuestionsController < ApplicationController
   end
 
   def drafts
-    @questions = current_user.questions.draft
-                  .paginate(page: params[:page], per_page: 2)
+    @questions = current_user.questions.draft.includes(:topics, :questions_topics)
+                  .paginate(page: params[:page], per_page: ENV['paginator_per_page_count'].to_i)
                   .order(updated_at: :desc)
   end
 
@@ -30,11 +30,11 @@ class QuestionsController < ApplicationController
     ActiveRecord::Base.transaction do
       begin
         @question = current_user.questions.build(question_params)
+        @question.assign_topics(params[:question][:topics])
         @question.save!
         if question_params[:attachment]
           @question.attachment.attach(question_params[:attachment])
         end
-        @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_create_success')
       rescue Exception => e
         flash.now[:alert] = e.message.present? ? e.message : ''
@@ -51,10 +51,10 @@ class QuestionsController < ApplicationController
     ActiveRecord::Base.transaction do
       begin
         @question.update!(question_params)
+        @question.assign_topics(params[:question][:topics])
         if question_params[:attachment]
           @question.attachment.attach(question_params[:attachment])
         end
-        @question.assign_topics(params[:question][:topics])
         redirect_to question_path(@question), notice: t('questions.question_update_success')
       rescue Exception => e
         flash.now[:alert] = e.message.present? ? e.message : ''
@@ -73,9 +73,8 @@ class QuestionsController < ApplicationController
   end
 
   private def set_question
-    begin
-      @question = Question.find(params[:id])
-    rescue Exception => e
+    @question = Question.find_by_slug(params[:slug])
+    unless @question
       redirect_to root_path, alert: 'Requested resource does not exist' and return
     end
   end

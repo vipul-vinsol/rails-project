@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     resource :profile, only: [:edit, :update, :show]
   end
 
-  resources :questions do
+  resources :questions, param: :slug do
     collection do
       get :drafts
     end

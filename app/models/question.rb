@@ -20,9 +20,11 @@ class Question < ApplicationRecord
   has_one_attached :attachment
   has_and_belongs_to_many :topics
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
+  has_many :notifications, as: :notifyable, dependent: :destroy
 
-  after_create :set_slug
-  after_create :charge_credit_for_posting_question, if: :publishing_first_time?
+  after_save :charge_credit_for_posting_question, if: :publishing_first_time?
+  after_save :send_notifications_to_users, if: -> { published? }
+  after_create :set_slug, if: -> { slug_was.nil? }
   before_destroy :can_be_destroyed?
 
   private def check_credits_for_posting_questions
@@ -76,6 +78,18 @@ class Question < ApplicationRecord
       amount: -ENV['credits_needed_to_ask_question'].to_i,
       user_id: user.id
     )
+  end
+
+  private def send_notifications_to_users
+    notifications_sent_to = []
+    topics.each do |topic|
+      topic.profiles.each do |profile|
+        unless notifications_sent_to.include?(profile)
+          profile.user.notifications.unread.create(notifyable: self)
+          notifications_sent_to << profile
+        end
+      end
+    end
   end
 
   def posted_by?(current_user)

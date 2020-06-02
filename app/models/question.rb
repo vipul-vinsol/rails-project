@@ -21,6 +21,7 @@ class Question < ApplicationRecord
   has_and_belongs_to_many :topics
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
   has_many :notifications, as: :notifyable, dependent: :destroy
+  has_many :votes, as: :voteable, dependent: :destroy
 
   after_save :charge_credit_for_posting_question, if: :publishing_first_time?
   after_save :send_notifications_to_users, if: -> { published? }
@@ -108,5 +109,9 @@ class Question < ApplicationRecord
 
   def to_param
     slug
+  end
+
+  def vote_count
+    votes.reduce(0) { |sum, v| sum + v.vote_type_before_type_cast }
   end
 end

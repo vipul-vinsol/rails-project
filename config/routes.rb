@@ -13,6 +13,12 @@ Rails.application.routes.draw do
     collection do
       get :drafts
     end
+
+    member do
+      post :upvote, to: "votes#upvote"
+      
+      post :downvote, to: "votes#downvote"
+    end
   end
 
   resources :notifications, only: [:index, :destroy] do

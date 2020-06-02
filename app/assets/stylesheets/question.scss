@@ -29,3 +29,30 @@
     border-radius: 6px;
   }
 }
+
+.question-show-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.question-details {
+  max-width: 80%;
+}
+
+.question-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: 1.5rem;
+
+  p {
+    font-size: 1.75rem;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}

@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: questions
+#
+#  id         :bigint           not null, primary key
+#  title      :string(255)
+#  content    :text(65535)
+#  status     :integer
+#  slug       :string(255)
+#  user_id    :bigint
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  deleted_at :datetime
+#
 class Question < ApplicationRecord
   acts_as_paranoid
 
@@ -20,9 +34,13 @@ class Question < ApplicationRecord
   has_one_attached :attachment
   has_and_belongs_to_many :topics
   has_many :credit_transactions, as: :contentable, dependent: :restrict_with_error
+  has_many :notifications, as: :notifyable, dependent: :destroy
+  has_many :votes, as: :voteable, dependent: :destroy
 
-  after_create :set_slug
-  after_create :charge_credit_for_posting_question, if: :publishing_first_time?
+  after_save :charge_credit_for_posting_question, if: :publishing_first_time?
+  #FIXME_AB: if published? and was unpublished
+  after_save :send_notifications_to_users, if: -> { published? }
+  after_create :set_slug, if: -> { slug_was.nil? }
   before_destroy :can_be_destroyed?
 
   private def check_credits_for_posting_questions
@@ -78,6 +96,20 @@ class Question < ApplicationRecord
     )
   end
 
+  private def send_notifications_to_users
+    notifications_sent_to = []
+    #FIXME_AB: eager load profiles
+    topics.each do |topic|
+      #FIXME_AB: topic.collect(&:profiles).flatten.uniq
+      topic.profiles.each do |profile|
+        unless notifications_sent_to.include?(profile)
+          profile.user.notifications.unread.create(notifyable: self)
+          notifications_sent_to << profile
+        end
+      end
+    end
+  end
+
   def posted_by?(current_user)
     user.id = current_user.id
   end
@@ -90,5 +122,13 @@ class Question < ApplicationRecord
     unless status_was === "draft"
       errors.add(:base, 'Can only updated questions in draft state')
     end
+  end
+
+  def to_param
+    slug
+  end
+
+  def vote_count
+    votes.reduce(0) { |sum, v| sum + v.vote_type_before_type_cast }
   end
 end

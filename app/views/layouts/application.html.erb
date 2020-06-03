@@ -5,6 +5,9 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 
     <% if content_for?(:js) %>
@@ -39,6 +42,12 @@
               <li class="nav-item">
                 <%= link_to "Ask a question", new_question_path, class: 'nav-link'  %>
               </li>
+              <li class="nav-item">
+                <%= link_to notifications_path, class: 'nav-link' do %>
+                  Notifications <span class="badge badge-info"><%= current_user.notifications.unread.count %></span>
+                <% end %>
+              </li>
+              
               <li class="dropdown">
                 <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
                   <% if current_user.profile.avatar.attached? && current_user.profile.avatar.image? %>
@@ -71,7 +80,7 @@
       <% if alert %>
         <p class="alert alert-info" role="alert"><%= alert %></p>
       <% end %>
-      <div style="width: 70%; margin: 50px auto;">
+      <div style="width: 100%; margin: 50px auto;">
         <%= yield %>
       </div>
   </div>

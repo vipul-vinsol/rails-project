@@ -1,5 +1,6 @@
 class VotesController < ApplicationController
   before_action :set_question
+  #FIXME_AB: I should not be able to vote my one content
 
   def upvote
     @vote = @question.votes.upvote.build(user: current_user)
@@ -35,6 +36,7 @@ class VotesController < ApplicationController
 
 
   private def set_question
+    #FIXME_AB: should be published
     @question = Question.find_by_slug(params[:slug])
     unless @question
       render json: {

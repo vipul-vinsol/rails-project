@@ -7,7 +7,7 @@ class NotificationsController < ApplicationController
                       .paginate(page: params[:page], per_page: ENV['paginator_per_page_count'].to_i)
                       .order(updated_at: :desc)
   end
-  
+
   def markseen
     begin
       @notification.read!
@@ -25,6 +25,8 @@ class NotificationsController < ApplicationController
     end
   end
 
+  #FIXME_AB: you can skip this before action check if you do following in set_notification
+  #FIXME_AB: current_user.notifications.find....
   private def check_ownership
     unless @notification.user === current_user
       redirect_to root_path, alert: 'Permission Denied' and return

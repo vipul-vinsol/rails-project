@@ -24,6 +24,7 @@ class Question < ApplicationRecord
   has_many :votes, as: :voteable, dependent: :destroy
 
   after_save :charge_credit_for_posting_question, if: :publishing_first_time?
+  #FIXME_AB: if published? and was unpublished
   after_save :send_notifications_to_users, if: -> { published? }
   after_create :set_slug, if: -> { slug_was.nil? }
   before_destroy :can_be_destroyed?
@@ -83,7 +84,9 @@ class Question < ApplicationRecord
 
   private def send_notifications_to_users
     notifications_sent_to = []
+    #FIXME_AB: eager load profiles
     topics.each do |topic|
+      #FIXME_AB: topic.collect(&:profiles).flatten.uniq
       topic.profiles.each do |profile|
         unless notifications_sent_to.include?(profile)
           profile.user.notifications.unread.create(notifyable: self)

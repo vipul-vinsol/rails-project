@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
     member do
       post :upvote, to: "votes#upvote"
-      
+
       post :downvote, to: "votes#downvote"
     end
   end
